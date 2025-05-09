@@ -1,10 +1,12 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./swagger");
 require("dotenv").config();
 
 const app = express();
 const port = process.env.PORT || 4000;
-
+const outputFile = require('./swagger.json');
 const connectDB = async () => {
         try {
             await mongoose.connect(process.env.DATABASE_URL, {
@@ -29,12 +31,13 @@ db.once("open", () => console.log("Conexion exitosa"))
 //Middleware
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-
+//app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(outputFile));
 /*
 app.get("/", (req, res) => {
     res.send("Hello world");
 });
 */
 
-app.use("/libros", require("./routes/librosRoutes"))
+app.use("/", require("./routes/librosRoutes"))
 app.listen(port, () => console.log("El servidor esta funcionando"));
